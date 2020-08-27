@@ -10,13 +10,13 @@ module.exports = {
     assetsSubDirectory: "static",
     assetsPublicPath: "/",
     proxyTable: {
-      "/v1": {
-        target: "http://47.94.236.224:8003", //需要代理的网址
-        changeOrigin: true,
-        pathRewrite: {
-          "^/v1": ""
-        }
-      }
+      // "/v1": {
+      //   target: "http://47.94.236.224:8003", //需要代理的网址
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     "^/v1": ""
+      //   }
+      // }
     },
 
     // Various Dev Server settings

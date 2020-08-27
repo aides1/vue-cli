@@ -27,7 +27,8 @@ export default {
   props: {},
   data() {
     return {
-      uploader: []
+      uploader: [],
+      extname: ""
     };
   },
   computed: {},
@@ -50,7 +51,8 @@ export default {
       swf: "../static/webuploader-0.1.5/Uploader.swf",
       // 文件接收服务端。
       // server: "/v1/upLoadFile",
-      server: "/v1/upLoadFile",
+      // server: "http://47.94.236.224:8082/app-api/upLoadFile",
+      server: "http://127.0.0.1:8003/upLoadFile",
       // 选择文件的按钮。可选。
       // 内部根据当前运行是创建，可能是input元素，也可能是flash.
       pick: "#picker",
@@ -64,7 +66,7 @@ export default {
       //如果某个分片由于网络问题出错，允许自动重传多少次[可选] [默认值：2]
       chunkRetry: 5,
       // 上传并发数。允许同时最大上传进程数 [可选] [默认值：3]
-      threads: 5,
+      threads: 50,
       formData: { uuid: uuid },
       //设置文件上传域的name 对于SpringMVC来说也就是后台接受文件的参数名称 [可选] [默认值：'file']
       //fileVal:{}
@@ -84,6 +86,7 @@ export default {
     // 当有文件被添加进队列的时候
     _this.uploader.on("fileQueued", function(file) {
       console.log("文件加入队列后");
+      // 添加到页面
       var $list = $("#fileList");
       $list.append(
         '<div id="' +
@@ -95,6 +98,34 @@ export default {
           '<p class="state">等待上传...</p>' +
           "</div>"
       );
+
+      // 得到文件拓展名进行判断
+      this.extname = file.name.substring(
+        file.name.indexOf(".") + 1,
+        file.name.length
+      );
+      console.log(this.extname);
+
+      // 判断文件类型
+      let type = this.extname;
+      console.log("fileupload:" + type);
+      if (
+        !(
+          type === "avi" ||
+          type === "mpg" ||
+          type === "wmv" ||
+          type === "3gp" ||
+          type === "mov" ||
+          type === "mp4" ||
+          type === "asf" ||
+          type === "asx" ||
+          type === "flv"
+        )
+      ) {
+        alert("请选择视频格式的文件");
+        $("#fileList").html("");
+        _this.uploader.reset();
+      }
     });
 
     // 文件上传过程中创建进度条实时显示。
@@ -145,8 +176,13 @@ export default {
     fileUpload() {
       let _this = this;
       var fileStatus = $("#fileStatus").val();
+      console.log(_this.uploader.getFiles());
+
+      _this.uploader.removeFile("WU_FILE_1", true);
+      console.log(_this.uploader.getFiles());
+
       if (fileStatus == "wait") {
-        alert(_this.uploader.getFiles().length);
+        // alert(_this.uploader.getFiles().length);
         _this.uploader.upload();
         $("#ctlBtn").html("暂停上传");
         $("#fileStatus").val("stop");
